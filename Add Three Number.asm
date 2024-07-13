@@ -9,11 +9,12 @@ msg4 DB "Summation of $"        ; Part of the summation message
 msg5 DB " , $"                  ; Part of the summation message
 msg6 DB " and $"                ; Part of the summation message
 msg7 DB " is $"                 ; Part of the summation message
-newline DB 0Ah, 0Dh, '$'        ; Newline and carriage return
+newline DB 0Dh, 0Ah, '$'        ; Newline and carriage return
 
 a DB ?        ; Variable to store the first number
 b DB ?        ; Variable to store the second number
-c DB ?        ; Variable to store the third number
+c DB ?        ; Variable to store the third number  
+sum DB ?      ; Variable to store the sum
 
 .code
 main proc
@@ -28,7 +29,8 @@ main proc
     ; Read first number from user
     mov ah, 1
     int 21h
-    mov a, al    ; Store the input in variable 'a'
+    sub al, '0'     ; Convert ASCII input to numerical value
+    mov a, al       ; Store the input in variable 'a'
 
     ; Print newline and carriage return
     mov ah, 9
@@ -43,7 +45,8 @@ main proc
     ; Read second number from user
     mov ah, 1
     int 21h
-    mov b, al    ; Store the input in variable 'b'
+    sub al, '0'     ; Convert ASCII input to numerical value
+    mov b, al       ; Store the input in variable 'b'
 
     ; Print newline and carriage return
     mov ah, 9
@@ -58,20 +61,19 @@ main proc
     ; Read third number from user
     mov ah, 1
     int 21h
-    mov c, al    ; Store the input in variable 'c'
+    sub al, '0'     ; Convert ASCII input to numerical value
+    mov c, al       ; Store the input in variable 'c'
 
     ; Print newline and carriage return
     mov ah, 9
     lea dx, newline
     int 21h
 
-    ; Summation of the numbers (assuming the inputs are in ASCII)
-    mov bl, a   ; Move the first number to BL register
-    mov bh, b   ; Move the second number to BH register
-    add bh, bl  ; Add the first number to the second number
-    mov bl, c   ; Move the third number to BL register
-    add bh, bl  ; Add the third number to the sum in BH register
-    sub bh, 60h ; Adjusting the ASCII values to get the actual sum (since each ASCII digit is 30h offset)
+    ; Calculate Sum
+    mov al, a       ; Move the first number to AL
+    add al, b       ; Add the second number to AL
+    add al, c       ; Add the third number to AL
+    mov sum, al     ; Store the sum in 'sum'
 
     ; Display "Summation of "
     mov ah, 9
@@ -81,6 +83,7 @@ main proc
     ; Display the first number
     mov ah, 2
     mov dl, a
+    add dl, '0'     ; Convert numerical value back to ASCII
     int 21h
 
     ; Display " , "
@@ -91,6 +94,7 @@ main proc
     ; Display the second number
     mov ah, 2
     mov dl, b
+    add dl, '0'     ; Convert numerical value back to ASCII
     int 21h
 
     ; Display " and "
@@ -101,6 +105,7 @@ main proc
     ; Display the third number
     mov ah, 2
     mov dl, c
+    add dl, '0'     ; Convert numerical value back to ASCII
     int 21h
 
     ; Display " is "
@@ -110,7 +115,8 @@ main proc
 
     ; Display the summation result
     mov ah, 2
-    mov dl, bh
+    mov dl, sum
+    add dl, '0'     ; Convert numerical value of sum back to ASCII
     int 21h
 
     ; Terminate the program
